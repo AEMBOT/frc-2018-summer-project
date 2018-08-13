@@ -1,4 +1,6 @@
-package org.usfirst.frc.falcons6443.robot.subsystems;
+package org.usfirst.frc.falcons6443.robot.utilities;
+
+import org.apache.tools.ant.Task;
 
 import java.io.File;
 import java.io.*;
@@ -6,23 +8,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class LogPuller {
+public class LogPuller extends Task {
 
     //Booleans used to specify weather or not the USB Drive and the robot are connected
-    static boolean isUSBConnected = false;
-    static boolean isRobotConnected = false;
-    static Process process;
+    private boolean isUSBConnected = false;
+    private boolean isRobotConnected = false;
+    private Process process;
 
-    public static void main(String[] args) {
+    public void execute() {
 
         String drivePath = "F:\\";
         Path rioPath = Paths.get("/home");
         double rioMem = 0;
 
+        log("BOOLIN");
+
+
         try {
             rioMem = getUsableSpace(rioPath);
         } catch (Exception e){
-            System.out.println("Couldn't access available rio memory");
+            log("Couldn't access available rio memory");
         }
 
 
@@ -35,18 +40,20 @@ public class LogPuller {
          try {
              process = Runtime.getRuntime().exec("loggerRetrieval.bat");
          }catch (IOException e){
-             System.out.println("File couldn't / didn't run");
+             log("File couldn't / didn't run");
          }
        }
        else
        {
-            System.out.println("USB or Robot not connected. Please Try again");
+            log("USB or Robot not connected. Please Try again");
        }
     }
 
 
+
+
     //Method used to return the boolean value of the isUSBConnected variable
-    public static boolean checkIfDirectoryExists(String usbPath){
+    public  boolean checkIfDirectoryExists(String usbPath){
 
         //Creates a local variable named directory then checks if that value does infact exist and sets the isUSBConnected variable accordingly
         File directory = new File(usbPath);
@@ -63,9 +70,15 @@ public class LogPuller {
 
 
     //Returns total unused space of param (RIO) in MB
-    private static double getUsableSpace(Path path) throws Exception{
+    private double getUsableSpace(Path path) throws Exception{
        return Files.getFileStore(path).getTotalSpace() / 1048576;
     }
 
+    public void setUSBConnected(boolean USBConnected) {
+        isUSBConnected = USBConnected;
+    }
 
+    public void setRobotConnected(boolean robotConnected) {
+        isRobotConnected = robotConnected;
+    }
 }
