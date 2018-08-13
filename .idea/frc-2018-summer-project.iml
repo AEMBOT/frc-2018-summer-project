@@ -12,7 +12,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library name="WPILib Libraries">
         <CLASSES>
           <root url="file://$USER_HOME$/wpilib/java/current/lib" />
@@ -28,7 +28,7 @@
         <jarDirectory url="file://$USER_HOME$/wpilib/java/current/lib" recursive="true" type="SOURCES" />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library name="WPILib User Lib Directory">
         <CLASSES>
           <root url="file://$USER_HOME$/wpilib/user/java/lib" />
@@ -45,5 +45,16 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="navx_frc" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/navx-mxp/java/lib/navx_frc.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$USER_HOME$/navx-mxp/java/lib/navx_frc.jar!/docs" />
+        </JAVADOC>
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
