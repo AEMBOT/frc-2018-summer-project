@@ -1,6 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.utilities;
 
-
+import org.usfirst.frc.falcons6443.robot.RobotMap;
 import java.io.File;
 import java.io.*;
 import java.nio.file.Files;
@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 public class LogPuller {
 
     //Booleans used to specify weather or not the USB Drive and the robot are connected
-
     private boolean isUSBConnected = false;
     private boolean isRobotConnected = false;
     private Process batchRunProc;
@@ -26,38 +25,32 @@ public class LogPuller {
         double rioMem = 0;
 
         //Attempts to set amount of usable memory on the RIO
-        try {
-            rioMem = getUsableSpace(rioPath);
-        } catch (Exception e){
-            System.out.println("Couldn't access available rio memory");
-        }
+        rioMem = getUsableSpace(rioPath);
 
         //Sets variable depending on if robot is connected or not
-       isUSBConnected = checkIfDirectoryExists(drivePath);
-       isRobotConnected = checkIfRobotIsConnected(robotIP);
+        isUSBConnected = checkIfDirectoryExists(drivePath);
+        isRobotConnected = checkIfRobotIsConnected(robotIP);
 
-       if(isUSBConnected && isRobotConnected && (rioMem != 0 && rioMem > 5))
-       {
+                                    //Shouldn't this be ran if the usable space is too small, not larger than 5?
+        if(isUSBConnected && isRobotConnected && (rioMem != 0 && rioMem > 5) && RobotMap.LogPuller && RobotMap.Logger) {
             //When both are connected run batch file and
-         try {
+            try {
              batchRunProc = Runtime.getRuntime().exec("loggerRetrieval.bat");
-         }catch (IOException e){
+            }catch (IOException e){
              System.out.println("File couldn't / didn't run");
-         }
-       }
-       else
-       {
-           System.out.println("USB or Robot not connected. Please Try again");
-       }
+            }
+        } else if(!RobotMap.LogPuller || !RobotMap.Logger) {
+            System.out.println("Logger or log puller setting false. Set true in RobotMap.");
+        } else {
+            System.out.println("USB or Robot not connected. Please Try again.");
+        }
     }
-
-
-
 
     //Method used to return the boolean value of the isUSBConnected variable
     private  boolean checkIfDirectoryExists(String usbPath){
 
-        //Creates a local variable named directory then checks if that value does infact exist and sets the isUSBConnected variable accordingly
+        //Creates a local variable named directory then checks if that value does
+        //in fact exist and sets the isUSBConnected variable accordingly
         File directory = new File(usbPath);
         isUSBConnected = directory.exists();
         return isUSBConnected;
@@ -79,24 +72,18 @@ public class LogPuller {
         String line;
         while (true){
             line = r.readLine();
-            if(line == null) {break;}
+            if(line == null) break;
 
             //It then checks if the response was positive or negative
-            if(line.contains("Request timed out."))
-            {
-                isRobotConnected = false;
-            }
-            else
-            {
-                isRobotConnected = true;
-            }
+            isRobotConnected = !line.contains("Request timed out.");
+
         }
         return isRobotConnected;
     }
 
     //Returns total unused space of param (RIO) in MB
     private double getUsableSpace(Path path) throws Exception{
-       return Files.getFileStore(path).getTotalSpace() / 1048576;
+       return Files.getFileStore(path).getUsableSpace() / 1048576;
     }
 
     public void setUSBConnected(boolean USBConnected) {
