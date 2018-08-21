@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 public class LogPuller {
 
@@ -35,12 +36,19 @@ public class LogPuller {
                                     //Shouldn't this be ran if the usable space is too small, not larger than 5?
         if(isUSBConnected && isRobotConnected && (rioMem != 0 && rioMem > 5) && RobotMap.LogPuller && RobotMap.Logger) {
             //When both are connected run batch file and
-            try {
-             batchRunProc = Runtime.getRuntime().exec("loggerRetrieval.bat");
+            //Check if it should run before running
+            System.out.println("Do you wish to pull the logs (Y or N): ");
+            Scanner s = new Scanner(System.in);
+            String response = s.nextLine();
+            if(response.toLowerCase() == "y") {
+                try {
+                    batchRunProc = Runtime.getRuntime().exec("loggerRetrieval.bat");
+                }
+                catch (IOException e){
+                    System.out.println("File couldn't / didn't run");
+                }
             }
-            catch (IOException e){
-             System.out.println("File couldn't / didn't run");
-            }
+
         }
         else if(!RobotMap.LogPuller || !RobotMap.Logger) {
             System.out.println("Logger or log puller setting false. Set true in RobotMap.");
@@ -82,8 +90,7 @@ public class LogPuller {
                 isRobotConnected = !line.contains("Request timed out.");
             }
         }
-        catch(IOException e)
-        {
+        catch(IOException e){
 
         }
         return isRobotConnected;
