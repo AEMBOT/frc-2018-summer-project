@@ -19,7 +19,7 @@ public class LogPuller {
     public void execute()  {
 
         //USB drive path, Robot USB IP, and rio home path variables
-        String robotIP = "";
+        String robotIP = "10.64.43.2";
         String drivePath = "F:\\";
         Path rioPath = Paths.get("/home");
 
