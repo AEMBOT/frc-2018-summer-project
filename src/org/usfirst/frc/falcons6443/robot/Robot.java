@@ -44,6 +44,8 @@ public class Robot extends IterativeRobot {
      */
     @Override
     public void robotInit() {
+        //Create pull class ref
+        LogPuller pull = new LogPuller();
 
         oi = new OI();
         autonomy = null;
@@ -86,6 +88,8 @@ public class Robot extends IterativeRobot {
     @Override
     public void disabledInit() {
         Logger.disabled();
+        LogPuller pull = new LogPuller();
+        pull.execute();
         Scheduler.getInstance().removeAll();
     }
 

@@ -13,8 +13,9 @@ public class LogPuller {
     private boolean isUSBConnected = false;
     private boolean isRobotConnected = false;
     private Process batchRunProc;
+    private double usableSpace;
 
-    public void execute() throws Exception {
+    public void execute()  {
 
         //USB drive path, Robot USB IP, and rio home path variables
         String robotIP = "";
@@ -36,12 +37,15 @@ public class LogPuller {
             //When both are connected run batch file and
             try {
              batchRunProc = Runtime.getRuntime().exec("loggerRetrieval.bat");
-            }catch (IOException e){
+            }
+            catch (IOException e){
              System.out.println("File couldn't / didn't run");
             }
-        } else if(!RobotMap.LogPuller || !RobotMap.Logger) {
+        }
+        else if(!RobotMap.LogPuller || !RobotMap.Logger) {
             System.out.println("Logger or log puller setting false. Set true in RobotMap.");
-        } else {
+        }
+        else {
             System.out.println("USB or Robot not connected. Please Try again.");
         }
     }
@@ -57,33 +61,43 @@ public class LogPuller {
     }
 
     //Method used to determine weather or not the robot is connected to the computer
-    private boolean checkIfRobotIsConnected(String robotIP) throws Exception {
+    private boolean checkIfRobotIsConnected(String robotIP) {
 
         String pingOut = "";
 
         //Creates a new cmd process to ping the robot
         ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/C", "ping " + robotIP);
         builder.redirectOutput();
+        try {
+            Process proc = builder.start();
 
-        Process proc = builder.start();
+            //Gathers command lines response and passes it into variable line
+            BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line;
+            while (true) {
+                line = r.readLine();
+                if (line == null) break;
 
-        //Gathers command lines response and passes it into variable line
-        BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-        String line;
-        while (true){
-            line = r.readLine();
-            if(line == null) break;
-
-            //It then checks if the response was positive or negative
-            isRobotConnected = !line.contains("Request timed out.");
+                //It then checks if the response was positive or negative
+                isRobotConnected = !line.contains("Request timed out.");
+            }
+        }
+        catch(IOException e)
+        {
 
         }
         return isRobotConnected;
     }
 
     //Returns total unused space of param (RIO) in MB
-    private double getUsableSpace(Path path) throws Exception{
-       return Files.getFileStore(path).getUsableSpace() / 1048576;
+    private double getUsableSpace(Path path) {
+        try {
+             usableSpace = Files.getFileStore(path).getUsableSpace() / 1048576;
+        }
+        catch (IOException e){
+
+        }
+        return usableSpace;
     }
 
     public void setUSBConnected(boolean USBConnected) {
