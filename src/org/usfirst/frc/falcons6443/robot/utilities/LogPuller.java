@@ -42,7 +42,7 @@ public class LogPuller {
             String response = s.nextLine();
             if(response.toLowerCase() == "y") {
                 try {
-                    batchRunProc = Runtime.getRuntime().exec("loggerRetrieval.bat");
+                    batchRunProc = Runtime.getRuntime().exec("C:\\Users\\jwilt\\IdeaProjects\\frc-2018-summer-project\\loggerRetrieval.bat");
                 }
                 catch (IOException e){
                     System.out.println("File couldn't / didn't run");
