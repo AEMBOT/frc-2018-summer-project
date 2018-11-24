@@ -68,6 +68,7 @@ public class ShooterSystem extends Subsystem {
             chartX = SmartDashboard.getNumberArray("Distance From Target", chartX);
             chartY = SmartDashboard.getNumberArray("Speed at Distance", chartY);
 
+
             //calculate speed from distance
             //linear interpolation
             double[] xy = {-1, -1, -1, -1}; //{x1, y1, x2, y2}
@@ -92,6 +93,9 @@ public class ShooterSystem extends Subsystem {
             pidf.setDesiredValue(desiredSpeed);
             //velocity PID to get wheel up to speed (encoder)
             double power = pidf.calcPID(encoder.getRate());
+            SmartDashboard.putNumber("Shooter Power", power);
+            SmartDashboard.putNumber("Desired Speed",desiredSpeed);
+
             motor.set(power);
 
             //feed in ball when at speed (a green light [boolean] on ShuffleBoard to alert hand feeding)
