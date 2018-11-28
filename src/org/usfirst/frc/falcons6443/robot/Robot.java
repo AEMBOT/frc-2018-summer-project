@@ -33,7 +33,7 @@ public class Robot extends IterativeRobot {
     private Xbox primary;
     private Xbox secondary;
     private TeleopStructure teleop;
-    private DriveTrainSystem driveTrain;
+    private DriveTrainSystemV2 driveTrain;
     private TurretSystem turret;
     private ShooterSystem shooter;
     private IntakeSystem intake;
@@ -51,7 +51,7 @@ public class Robot extends IterativeRobot {
         primary = new Xbox(new XboxController(0)); //change controller type here
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
-        driveTrain = new DriveTrainSystem();
+        driveTrain = new DriveTrainSystemV2();
         turret = new TurretSystem();
         shooter = new ShooterSystem();
         intake = new IntakeSystem();
@@ -96,7 +96,8 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic()
     {
         //drive
-        driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
+        //driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
+        driveTrain.falconTankDrive(primary.leftStickY(), primary.rightStickY());
         // driveTrain.tankDrive(driveProfile.calculate()); TODO: TEST this cause profiles are cool
 
         //shooter
