@@ -150,6 +150,9 @@ public class NetTables {
         getEntry("Default",entry).setNumber(number);
     }
 
+    /**
+     * Required if you want the tables to update
+     * */
     public static void flush(){
         NetworkTableInstance.getDefault().flush();
     }

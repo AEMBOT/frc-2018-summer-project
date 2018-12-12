@@ -93,6 +93,7 @@ public class ShooterSystem {
         if (pidf.isDone()) System.out.println("PID DONE!!!!!");
     }
 
+    //"charges" the shooter wheel, getting it up to speed
     public void charge() {
         //get distance to target (inches) from camera
         double distance = 40;//pixy.getDistanceToObject();

@@ -45,6 +45,7 @@ public class Encoders extends Encoder{
     }
 
     @Override
+    //gets ticks of the encoder (including offset)
     public int get() {
         return super.get() + this.offset;
     }
@@ -67,7 +68,7 @@ public class Encoders extends Encoder{
         this.prev = curr;
     }
 
-    public double rawSpeed(){
+    public double getRawSpeed(){
         return this.getRate();
     }
 
@@ -83,6 +84,7 @@ public class Encoders extends Encoder{
         this.ticksPerRev = ticksPerRev;
     }
 
+    //returns the number of revolutions the wheel has turned (resets when encoder resets)
     public double getRevs(){
         return (double) this.get() / (double) this.ticksPerRev;
     }
