@@ -16,6 +16,10 @@ String piOutput = "none";//string to be sent to the robot
 String input = "blank";	 //string received from the robot
 const String PIXY = "pi";
 Pixy pixy;
+String x;
+String y;
+String width;
+String height;
 
 void setup(){
   Serial.begin(9600);
@@ -33,25 +37,28 @@ void loop(){
   for(int i=0;i<blocks;i++){
     //if(pixy.blocks[i].signature == 3) //if checking for an object and have more than one "type" or color to choose from
     								     //use this line and choose the signature or "color" you want
-      temp = pixy.blocks[i].width * pixy.blocks[i].height;
+      temp = String(pixy.blocks[i].getWidth).toDouble() * String(pixy.blocks[i].getHeight).toDouble();
       if(temp > area){
         area = temp;
         biggest = i;
       }
-
+      x = String(pixy.blocks[i].getX);
+      y = String(pixy.blocks[i].getY);
+      width = String(pixy.blocks[i].getWidth);
+      height = String(pixy.blocks[i].getHeight);
       //that loops finds the biggest object since sometimes the object you are looking for becomes
       //broken up into multiple, smaller, objects
   }
   if(!blocks){
     piOutput = "none"; //if no blocks tell roborio there are none
   }else{
-    piOutput = String(pixy.blocks[biggest].x / 319.0);  //turns into a percent of the screen
+    piOutput = String(x.toDouble() / 319.0);  //turns into a percent of the screen
     piOutput += "|";				        //inserts a "pipe" so robrio can split the numbers later
-    piOutput += String(pixy.blocks[biggest].y / 199.0); //319 and 199 are the dimensions of the screen
+    piOutput += String(y.toDouble() / 199.0); //319 and 199 are the dimensions of the screen
     piOutput += "|";
     piOutput += String(area / 64000);
     piOutput += "|";
-    piOutput += String(pixy.blocks[biggest].width / 320.0)
+    piOutput += String(width / 320.0)
   }
 
   delay(70); //gives time for everything to process
