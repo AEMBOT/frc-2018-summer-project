@@ -7,11 +7,8 @@
 
 package org.usfirst.frc.falcons6443.robot;
 
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.cscore.VideoMode;
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
@@ -20,6 +17,7 @@ import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.subsystems.*;
 import org.usfirst.frc.falcons6443.robot.utilities.TeleopStructure;
 import org.usfirst.frc.falcons6443.robot.utilities.Logger;
+import org.usfirst.frc.falcons6443.robot.utilities.enums.LoggerSystems;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.XboxRumble;
 
 /**
@@ -44,6 +42,7 @@ public class Robot extends IterativeRobot {
 
 
     private boolean babyMode = false;
+    private double firstms;
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -133,6 +132,7 @@ public class Robot extends IterativeRobot {
         teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.Turret, () -> turret.getManual(), (Boolean set) ->  turret.setManual(set));
         teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.Intake, () -> intake.getManual(), (Boolean set) -> intake.setManual(set));
         teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.Turret, () -> turret.getManual(), (Boolean set) ->  turret.setManual(set));
+        firstms = Double.parseDouble(Logger.millisecondStamp());
     }
     /**
      * This function is called periodically during operator control.
@@ -140,6 +140,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic()
     {
+        shooter.updateRate();
         //drive
       //  driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
         // driveTrain.tankDrive(driveProfile.calculate()); TODO: TEST this cause profiles are cool
@@ -147,7 +148,10 @@ public class Robot extends IterativeRobot {
         //shooter
    //     teleop.press(primary.leftBumper(), () -> shooter.charge());
    //     teleop.runOncePerPress(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
-        teleop.manual(TeleopStructure.ManualControls.Shooter, primary.leftStickY(), (Double power) -> shooter.manual(power));
+     //   teleop.manual(TeleopStructure.ManualControls.Shooter, primary.leftStickY(), (Double power) -> shooter.manual(power));
+   //     teleop.press(primary.A(), () -> shooter.pidfTuning(true));
+        //teleop.press(primary.A(), () -> shooter.manual(0.25));
+        teleop.press(primary.B(), () -> shooter.manual(0.75));
 
         //turret
    //     teleop.runOncePerPress(primary.eight(), () -> turret.off(), false);
@@ -155,22 +159,28 @@ public class Robot extends IterativeRobot {
         teleop.manual(TeleopStructure.ManualControls.Turret, primary.rightStickY(), (Double power) -> turret.manual(power));
 
         //intake
-        teleop.press(primary.A(), () -> intake.movePistonIn());
-        teleop.press(primary.B(), () -> intake.movePistonOut());
-        teleop.press(primary.Y(), () -> intake.startCompressor());
-        teleop.manual(TeleopStructure.ManualControls.Intake, primary.leftTrigger(), (Double power) -> intake.manual(power));
-        teleop.manual(TeleopStructure.ManualControls.Intake, primary.rightTrigger(), (Double power) -> intake.manual(power));
+       // teleop.press(primary.A(), () -> intake.movePistonIn());
+       // teleop.press(primary.B(), () -> intake.movePistonOut());
+       // teleop.press(primary.Y(), () -> intake.startCompressor());
+        //teleop.manual(TeleopStructure.ManualControls.Intake, primary.leftTrigger(), (Double power) -> intake.manual(power));
+        //teleop.manual(TeleopStructure.ManualControls.Intake, primary.rightTrigger(), (Double power) -> intake.manual(power));
 
         //off
-        teleop.off(() -> intake.stopCompressor(), primary.Y());
-        teleop.off(() -> shooter.off(), TeleopStructure.ManualControls.Shooter, primary.leftBumper());
+        teleop.off(() -> shooter.manual(0.25), primary.B());
+        //teleop.off(() -> intake.stopCompressor(), primary.Y());
+        //teleop.off(() -> shooter.pidfTuning(false), primary.A());
+       // teleop.off(() -> shooter.off(), TeleopStructure.ManualControls.Shooter, primary.leftBumper(),
+      //          primary.A(), primary.B());
         teleop.off(() -> turret.off(), TeleopStructure.ManualControls.Turret, primary.eight(), primary.X());
-        teleop.off(() -> intake.off(), TeleopStructure.ManualControls.Intake);
+       // teleop.off(() -> intake.off(), TeleopStructure.ManualControls.Intake);
 
         //general periodic functions
     //    turret.update(!primary.seven());
         teleop.periodicEnd();
         shooter.printRate();
+        double ms = Double.parseDouble(Logger.millisecondStamp()) - firstms;
+        if(primary.B())Logger.log(LoggerSystems.Shooter,  ms + ", " + shooter.getRate() + ", 0.75");
+        else Logger.log(LoggerSystems.Shooter, ms + ", " + shooter.getRate() + ", 0.25");
 
         //other junk
         if(shooter.isCharged()) primary.setRumble(XboxRumble.RumbleBoth, 0.4);
@@ -187,11 +197,11 @@ public class Robot extends IterativeRobot {
      */
     @Override
     public void disabledInit(){
-        try{
-            Logger.printSpace();
-        } catch (Exception e){
-            System.out.println("Failed to print storage");
-        }
+    //    try{
+    //        Logger.printSpace();
+    //    } catch (Exception e){
+    //        System.out.println("Failed to print storage");
+    //    }
         Logger.disabled();
     }
 

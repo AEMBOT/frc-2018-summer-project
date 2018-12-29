@@ -14,7 +14,7 @@ public class ShooterSystem {
 
     private VictorSP motor;
     //    private Pixy pixy;
-    public Encoders encoder;
+    public Encoders encoder; //top speed ~4,000 rpm
     private PIDF pidf;
     private Preferences prefs;
 
@@ -28,6 +28,14 @@ public class ShooterSystem {
     private double prevRev;
     private double prevTime;
 
+    private double rate;
+
+    double P = 0;
+    double I = 0;
+    double D = 0;
+    double F = 1/4000;
+    double Eps = 0;
+
     public ShooterSystem(){
         motor = new VictorSP(RobotMap.ShooterMotor);
 //        pixy = Pixy.get();
@@ -35,18 +43,29 @@ public class ShooterSystem {
         encoder.setDiameter(4);
         encoder.setTicksPerRev(1024);
         prefs = Preferences.getInstance();
-        pidf = new PIDF(prefs.getDouble("Shooter P", 0), prefs.getDouble("Shooter I", 0),
+        /*pidf = new PIDF(prefs.getDouble("Shooter P", 0), prefs.getDouble("Shooter I", 0),
                 prefs.getDouble("Shooter D", 0), prefs.getDouble("Shooter F", 0),
-                prefs.getDouble("Shooter Eps", 0));
+                prefs.getDouble("Shooter Eps", 0));*/
+        pidf = new PIDF(P, I, D, F, Eps);
 //        encoder.setReverseDirection(false);
-//        pidf.setFinishedRange(5); //update value
-        pidf.setMaxOutput(0.75);
+        pidf.setFinishedRange(100); //update value
+        pidf.setMaxOutput(1);
         pidf.setMinDoneCycles(5);
         ballCounter = 0;
         SmartDashboard.putNumberArray("Distance From Target", chartX);
         SmartDashboard.putNumberArray("Speed at Distance", chartY);
         SmartDashboard.putNumber("Balls Shot", ballCounter);
         SmartDashboard.putBoolean("Load", false); //true when the ball can be loaded
+        pidf.setDesiredValue(3900);
+    }
+
+    public void pidfTuning(boolean on){
+        double power;
+        if(on){
+            power = pidf.calcPID(getRate());
+        } else power = 0;
+        motor.set(power);
+        SmartDashboard.putNumber("pidval", power);
     }
 
     public void printRate(){
@@ -73,13 +92,18 @@ public class ShooterSystem {
 
     //returns rotations per minute
     //MAX: ~4100 revs/min
-    public double getRate(){
+    public void updateRate(){
         double time = (double) RobotController.getFPGATime() / 1000000.0;
         double rev = encoder.getRevs();
+        System.out.println(encoder.get());
         double rate = (rev - prevRev) / (time - prevTime);
         prevTime = time;
         prevRev = rev;
-        return rate * 60; //rotations per minute
+        this.rate = rate * 60; //rotations per minute
+    }
+
+    public double getRate(){
+        return rate;
     }
 
     public void tuningCharge(double desiredSpeed){

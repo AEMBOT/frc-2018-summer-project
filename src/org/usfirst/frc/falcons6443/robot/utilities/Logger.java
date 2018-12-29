@@ -90,8 +90,9 @@ public class Logger {
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName, true))) {
                 bw.write(oldMessage);
                 bw.newLine();
-                bw.write(timeStamp() + ", " + clockTimeStamp());
-                bw.newLine();
+          //      bw.write(millisecondStamp() + ", " + timeStamp() + ", " + clockTimeStamp());
+           //     bw.newLine();
+                // TODO: 12/28/2018 add time stamps back in
                 if(disabled) bw.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -115,7 +116,7 @@ public class Logger {
         }
     }
 
-    private static String millisecondStamp() {
+    public static String millisecondStamp() {
         Date date = new Date();
         return Long.toString(date.getTime());
     }

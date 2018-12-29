@@ -16,6 +16,7 @@ public class SingularCompressor {
         if(instance == null) {
             instance = new Compressor();
         }
+        instance.stop();
     }
 
     //creates compressor using the specified PCM ID (module); can only be between 0 and 62

@@ -42,5 +42,5 @@ public class RobotMap {
     public static final int IntakeMotor = 6;
 
     //code settings
-    public static final boolean Logger = false;
+    public static final boolean Logger = true;
 }
