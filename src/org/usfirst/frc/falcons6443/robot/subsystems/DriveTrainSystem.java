@@ -26,8 +26,6 @@ public class DriveTrainSystem{
     private SpeedControllerGroup leftMotors;
     private SpeedControllerGroup rightMotors;
 
-    private Encoders leftEncoder; // Encoders clicks per rotation = 850 (default in Encoders class)
-    private Encoders rightEncoder;
     private List<List<Integer>> encoderList = new ArrayList<List<Integer>>();
     public Timer encoderCheck;
 
@@ -50,12 +48,6 @@ public class DriveTrainSystem{
                 new Spark(RobotMap.BackRightMotor));
         drive = new DifferentialDrive(leftMotors, rightMotors);
         leftMotors.setInverted(true);
-        leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
-        rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
-        leftEncoder.setTicksPerRev(850);
-        rightEncoder.setTicksPerRev(850);
-        leftEncoder.setDiameter(WheelDiameter);
-        rightEncoder.setDiameter(WheelDiameter);
         // the driver station will complain for some reason if this isn't setSpeed so it's pretty necessary.
         // [FOR SCIENCE!]
         drive.setSafetyEnabled(false);
@@ -102,8 +94,6 @@ public class DriveTrainSystem{
 
         first = false;
         //Left encoder is encoderList.get(0). Right encoder is encoderList.get(1)
-        encoderList.get(0).add(leftEncoder.get());
-        encoderList.get(1).add(rightEncoder.get());
 
         if(encoderCheck.get() > 1){ //if the function has been running for a second
             double first = encoderList.get(0).get(0);
@@ -117,19 +107,7 @@ public class DriveTrainSystem{
                 if(strikes >= 3) usingLeftEncoder = false; //if 3 strikes use right encoder (the backup encoder)
             }
         }
-
-        return getDistanceUnsafe();
-    }
-
-    public double getDistanceUnsafe(){
-        if(usingLeftEncoder) return leftEncoder.getDistanceWithDiameter();
-        else return rightEncoder.getDistanceWithDiameter();
-    }
-
-    public void reset(){
-        leftEncoder.reset();
-        rightEncoder.reset();
-//        Logger.log(LoggerSystems.Drive, "reset drive encoders");
+return 10;
     }
 
     //Not sure if good format, but these values are only used for this method

@@ -13,13 +13,10 @@ import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
-import org.usfirst.frc.falcons6443.robot.autonomous.AutoMain;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.subsystems.*;
 import org.usfirst.frc.falcons6443.robot.utilities.TeleopStructure;
 import org.usfirst.frc.falcons6443.robot.utilities.Logger;
-import org.usfirst.frc.falcons6443.robot.utilities.enums.XboxRumble;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -34,11 +31,6 @@ public class Robot extends IterativeRobot {
     private Xbox secondary;
     private TeleopStructure teleop;
     private DriveTrainSystem driveTrain;
-    private TurretSystem turret;
-    private ShooterSystem shooter;
-    private IntakeSystem intake;
-    private AutoDrive autoDrive;
-    private AutoMain autoMain;
 
     private boolean babyMode;
     /**
@@ -52,11 +44,6 @@ public class Robot extends IterativeRobot {
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
         driveTrain = new DriveTrainSystem();
-        turret = new TurretSystem();
-        shooter = new ShooterSystem();
-        intake = new IntakeSystem();
-        autoDrive = new AutoDrive();
-        autoMain = new AutoMain(autoDrive, turret, shooter);
         //CameraServer.getInstance().putVideo();
         //format 1 is kMJPEG
         VideoMode vm = new VideoMode(1, 640, 480, 60);
@@ -72,7 +59,6 @@ public class Robot extends IterativeRobot {
     public void autonomousInit()
     {
         Logger.autoInit();
-        autoMain.runAutoPath();
     }
 
     /**
@@ -87,7 +73,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopInit(){
         Logger.teleopInit();
-        teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.Turret, () -> turret.getManual(), (Boolean set) ->  turret.setManual(set));
+     //   teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.Turret, () -> turret.getManual(), (Boolean set) ->  turret.setManual(set));
     }
     /**
      * This function is called periodically during operator control.
@@ -96,27 +82,11 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic()
     {
         //drive
-        driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
-        // driveTrain.tankDrive(driveProfile.calculate()); TODO: TEST this cause profiles are cool
-
-        //shooter
-        teleop.press(primary.leftBumper(), () -> shooter.charge());
-        teleop.runOncePerPress(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
-
-        //off
-        teleop.off(() -> shooter.off(), primary.leftBumper());
-
-        //turret
-        teleop.runOncePerPress(primary.eight(), () -> turret.disable(), false);
-        teleop.runOncePerPress(primary.Y(), () -> turret.roamingToggle(), false);
-        teleop.manual(TeleopStructure.ManualControls.Turret, primary.rightStickX(), (Double power) -> turret.manualControl(power));
+        //driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
+         driveTrain.tankDrive(primary.rightStickY(), -primary.leftStickY());
 
         //general periodic functions
-        turret.roam();
         teleop.periodicEnd();
-
-        //other junk
-        if(shooter.isCharged()) primary.setRumble(XboxRumble.RumbleBoth, 0.4);
     }
 
     /**
